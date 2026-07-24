@@ -60,25 +60,25 @@ local function resetState(cooldown)
     end
 end
 
-RegisterNetEvent('banktruck:server:requestStart', function()
+RegisterNetEvent('nowipebanktruck:server:requestStart', function()
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
 
     if Config.OneAtATime and state.active then
-        TriggerClientEvent('banktruck:client:notify', src, 'A bank truck heist is already underway.', 'error')
+        TriggerClientEvent('nowipebanktruck:client:notify', src, 'A bank truck heist is already underway.', 'error')
         return
     end
 
     if os.time() < state.cooldownUntil then
         local mins = math.ceil((state.cooldownUntil - os.time()) / 60)
-        TriggerClientEvent('banktruck:client:notify', src, ('The route is on cooldown for %d more minute(s).'):format(mins), 'error')
+        TriggerClientEvent('nowipebanktruck:client:notify', src, ('The route is on cooldown for %d more minute(s).'):format(mins), 'error')
         return
     end
 
     local police = getOnDutyPoliceCount()
     if police < Config.RequiredPolice then
-        TriggerClientEvent('banktruck:client:notify', src, ('At least %d police must be on duty to attempt this.'):format(Config.RequiredPolice), 'error')
+        TriggerClientEvent('nowipebanktruck:client:notify', src, ('At least %d police must be on duty to attempt this.'):format(Config.RequiredPolice), 'error')
         return
     end
 
@@ -88,10 +88,10 @@ RegisterNetEvent('banktruck:server:requestStart', function()
     state.heistId = ('bt-%s-%s'):format(src, os.time())
     state.stage = 'patrol'
 
-    TriggerClientEvent('banktruck:client:setLockout', src, true)
+    TriggerClientEvent('nowipebanktruck:client:setLockout', src, true)
 
     local spawnIndex = math.random(#Config.TruckSpawns)
-    TriggerClientEvent('banktruck:client:beginHeist', src, spawnIndex, state.heistId)
+    TriggerClientEvent('nowipebanktruck:client:beginHeist', src, spawnIndex, state.heistId)
 
     if Config.Webhook.logStart then
         sendWebhook('Bank Truck Heist Started', 'A crew has set off to intercept a bank truck.', {
@@ -101,14 +101,14 @@ RegisterNetEvent('banktruck:server:requestStart', function()
     end
 end)
 
-RegisterNetEvent('banktruck:server:announceTruck', function(netId)
+RegisterNetEvent('nowipebanktruck:server:announceTruck', function(netId)
     local src = source
     if src ~= state.director then return end
     state.truckNetId = netId
-    TriggerClientEvent('banktruck:client:trackEntity', -1, netId)
+    TriggerClientEvent('nowipebanktruck:client:trackEntity', -1, netId)
 end)
 
-RegisterNetEvent('banktruck:server:log', function(heistId, stage)
+RegisterNetEvent('nowipebanktruck:server:log', function(heistId, stage)
     local src = source
     if src ~= state.director or heistId ~= state.heistId then return end
     state.stage = stage
@@ -120,34 +120,34 @@ RegisterNetEvent('banktruck:server:log', function(heistId, stage)
     end
 end)
 
-RegisterNetEvent('banktruck:server:requestC4', function(heistId)
+RegisterNetEvent('nowipebanktruck:server:requestC4', function(heistId)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
 
     if not state.active or heistId ~= state.heistId or state.stage ~= 'cleared' then
-        TriggerClientEvent('banktruck:client:c4Result', src, false)
+        TriggerClientEvent('nowipebanktruck:client:c4Result', src, false)
         return
     end
 
     local removed = exports[Config.InventoryResource]:RemoveItem(src, Config.C4.item, 1)
-    TriggerClientEvent('banktruck:client:c4Result', src, removed and true or false)
+    TriggerClientEvent('nowipebanktruck:client:c4Result', src, removed and true or false)
 end)
 
-RegisterNetEvent('banktruck:server:loot', function(heistId)
+RegisterNetEvent('nowipebanktruck:server:loot', function(heistId)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
 
     if not state.active or heistId ~= state.heistId or state.stage ~= 'breached' or state.looted then
-        TriggerClientEvent('banktruck:client:lootResult', src, false, 'Nothing left to loot.')
+        TriggerClientEvent('nowipebanktruck:client:lootResult', src, false, 'Nothing left to loot.')
         return
     end
 
     state.looted = true -- lock immediately, before any awaits, to prevent a double-loot race
 
     local money = math.random(Config.Loot.moneyMin, Config.Loot.moneyMax)
-    Player.Functions.AddMoney(Config.Loot.moneyType, money, 'banktruck-heist-loot')
+    Player.Functions.AddMoney(Config.Loot.moneyType, money, 'nowipebanktruck-loot')
 
     local droppedItems = {}
     for _, entry in ipairs(Config.Loot.items) do
@@ -158,14 +158,14 @@ RegisterNetEvent('banktruck:server:loot', function(heistId)
         end
     end
 
-    TriggerClientEvent('banktruck:client:lootResult', src, true)
+    TriggerClientEvent('nowipebanktruck:client:lootResult', src, true)
 
     if Config.Loot.giveTruckKeys and state.truckNetId then
         local vehicle = NetworkGetEntityFromNetworkId(state.truckNetId)
         if DoesEntityExist(vehicle) then
             local plate = GetVehicleNumberPlateText(vehicle)
             local model = GetEntityModel(vehicle)
-            TriggerClientEvent('banktruck:client:giveKeys', src, plate, model)
+            TriggerClientEvent('nowipebanktruck:client:giveKeys', src, plate, model)
         end
     end
 
@@ -177,8 +177,8 @@ RegisterNetEvent('banktruck:server:loot', function(heistId)
     end
 
     local director = state.director
-    TriggerClientEvent('banktruck:client:cleanupTruck', director)
-    TriggerClientEvent('banktruck:client:heistOver', -1)
+    TriggerClientEvent('nowipebanktruck:client:cleanupTruck', director)
+    TriggerClientEvent('nowipebanktruck:client:heistOver', -1)
 
     resetState(true)
 end)
@@ -186,11 +186,11 @@ end)
 AddEventHandler('playerDropped', function()
     local src = source
     if state.active and src == state.director then
-        TriggerClientEvent('banktruck:client:heistOver', -1)
+        TriggerClientEvent('nowipebanktruck:client:heistOver', -1)
         resetState(true)
     end
 end)
 
-exports('IsBankTruckHeistActive', function()
+exports('IsNowipeBankTruckActive', function()
     return state.active
 end)

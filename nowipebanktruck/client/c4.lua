@@ -24,9 +24,9 @@ local function breakBackDoors(vehicle)
     end
 end
 
-RegisterNetEvent('banktruck:client:tryPlantC4', function()
+RegisterNetEvent('nowipebanktruck:client:tryPlantC4', function()
     if not BT.truck or not DoesEntityExist(BT.truck) then return end
-    if Entity(BT.truck).state['bt:stage'] ~= 'cleared' then
+    if Entity(BT.truck).state['nowipebanktruck:stage'] ~= 'cleared' then
         BT.Notify('Nothing to breach right now.', 'error')
         return
     end
@@ -38,10 +38,10 @@ RegisterNetEvent('banktruck:client:tryPlantC4', function()
         return
     end
 
-    TriggerServerEvent('banktruck:server:requestC4', Entity(BT.truck).state['bt:heistId'])
+    TriggerServerEvent('nowipebanktruck:server:requestC4', Entity(BT.truck).state['nowipebanktruck:heistId'])
 end)
 
-RegisterNetEvent('banktruck:client:c4Result', function(success)
+RegisterNetEvent('nowipebanktruck:client:c4Result', function(success)
     if not success then
         BT.Notify('You need a C4 charge to breach the doors.', 'error')
         return
@@ -75,8 +75,8 @@ RegisterNetEvent('banktruck:client:c4Result', function(success)
 
     if DoesEntityExist(vehicle) then
         breakBackDoors(vehicle)
-        local heistId = Entity(vehicle).state['bt:heistId']
-        Entity(vehicle).state:set('bt:stage', 'breached', true)
-        TriggerServerEvent('banktruck:server:log', heistId, 'breached')
+        local heistId = Entity(vehicle).state['nowipebanktruck:heistId']
+        Entity(vehicle).state:set('nowipebanktruck:stage', 'breached', true)
+        TriggerServerEvent('nowipebanktruck:server:log', heistId, 'breached')
     end
 end)

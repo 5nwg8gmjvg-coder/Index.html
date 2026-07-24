@@ -1,4 +1,4 @@
-# banktruck-heist
+# nowipebanktruck
 
 A QBox bank truck robbery for `qs-inventory` + `qs-keys`.
 
@@ -35,7 +35,7 @@ A QBox bank truck robbery for `qs-inventory` + `qs-keys`.
 1. Drop this folder in your `resources` directory.
 2. Add to `server.cfg` **after** your core/inventory/keys resources:
    ```
-   ensure banktruck-heist
+   ensure nowipebanktruck
    ```
 3. Add the C4 item to `qs-inventory`'s item list (`items.lua` or your
    shared items file), e.g.:
@@ -91,5 +91,5 @@ exports[Config.KeysResource]:GiveKeys(plate, model)
 ```
 client-side on the looter after a successful loot. If your installed
 version uses a different export name/signature, edit the call in
-`client/loot.lua` (`banktruck:client:giveKeys` handler) to match — the
+`client/loot.lua` (`nowipebanktruck:client:giveKeys` handler) to match — the
 rest of the heist works independently of this bonus feature.

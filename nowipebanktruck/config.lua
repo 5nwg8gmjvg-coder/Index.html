@@ -154,7 +154,7 @@ Config.Loot = {
 -- ============================================================
 Config.Webhook = {
     url          = '', -- paste your Discord webhook URL here
-    botName      = 'Bank Truck Heist',
+    botName      = 'NoWipe Bank Truck',
     botAvatar    = '',
     color        = 15158332, -- red
     logStart     = true,

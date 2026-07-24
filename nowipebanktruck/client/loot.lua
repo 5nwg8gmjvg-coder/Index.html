@@ -1,6 +1,6 @@
-RegisterNetEvent('banktruck:client:tryLoot', function()
+RegisterNetEvent('nowipebanktruck:client:tryLoot', function()
     if not BT.truck or not DoesEntityExist(BT.truck) then return end
-    if Entity(BT.truck).state['bt:stage'] ~= 'breached' then
+    if Entity(BT.truck).state['nowipebanktruck:stage'] ~= 'breached' then
         BT.Notify('The truck is still locked up.', 'error')
         return
     end
@@ -15,11 +15,11 @@ RegisterNetEvent('banktruck:client:tryLoot', function()
     BT.Progress(Config.Loot.lootTime, 'Looting truck')
 
     if not BT.truck or not DoesEntityExist(BT.truck) then return end
-    local heistId = Entity(BT.truck).state['bt:heistId']
-    TriggerServerEvent('banktruck:server:loot', heistId)
+    local heistId = Entity(BT.truck).state['nowipebanktruck:heistId']
+    TriggerServerEvent('nowipebanktruck:server:loot', heistId)
 end)
 
-RegisterNetEvent('banktruck:client:giveKeys', function(plate, model)
+RegisterNetEvent('nowipebanktruck:client:giveKeys', function(plate, model)
     if GetResourceState(Config.KeysResource) ~= 'started' then return end
     local ok = pcall(function()
         exports[Config.KeysResource]:GiveKeys(plate, model)
@@ -30,7 +30,7 @@ RegisterNetEvent('banktruck:client:giveKeys', function(plate, model)
     end
 end)
 
-RegisterNetEvent('banktruck:client:lootResult', function(success, reason)
+RegisterNetEvent('nowipebanktruck:client:lootResult', function(success, reason)
     if success then
         BT.Notify('You looted the bank truck.', 'success')
     else
@@ -43,7 +43,7 @@ CreateThread(function()
     while true do
         Wait(0)
         if not BT.HasTarget() and BT.truck and DoesEntityExist(BT.truck) then
-            local stage = Entity(BT.truck).state['bt:stage']
+            local stage = Entity(BT.truck).state['nowipebanktruck:stage']
             if stage == 'cleared' or stage == 'breached' then
                 local backCoords = GetOffsetFromEntityInWorldCoords(BT.truck, 0.0, -3.2, 0.0)
                 local dist = #(GetEntityCoords(PlayerPedId()) - backCoords)
@@ -52,9 +52,9 @@ CreateThread(function()
                     DrawText3D(backCoords, ('[E] %s'):format(label))
                     if IsControlJustReleased(0, 38) then
                         if stage == 'cleared' then
-                            TriggerEvent('banktruck:client:tryPlantC4')
+                            TriggerEvent('nowipebanktruck:client:tryPlantC4')
                         else
-                            TriggerEvent('banktruck:client:tryLoot')
+                            TriggerEvent('nowipebanktruck:client:tryLoot')
                         end
                     end
                 else

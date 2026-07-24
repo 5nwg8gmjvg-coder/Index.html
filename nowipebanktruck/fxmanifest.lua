@@ -2,9 +2,9 @@ fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
 
-name 'banktruck-heist'
+name 'nowipebanktruck'
 author 'Custom'
-description 'QBox bank truck robbery heist - qs-inventory & qs-keys integration'
+description 'NoWipe bank truck robbery heist - qs-inventory & qs-keys integration'
 version '1.0.0'
 
 shared_scripts {

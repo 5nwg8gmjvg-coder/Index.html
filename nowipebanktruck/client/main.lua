@@ -58,7 +58,7 @@ local function spawnPed()
                 options = {
                     {
                         type = 'client',
-                        event = 'banktruck:client:openMenu',
+                        event = 'nowipebanktruck:client:openMenu',
                         icon = 'fas fa-truck-ramp-box',
                         label = Config.Ped.label,
                     },
@@ -68,12 +68,12 @@ local function spawnPed()
         elseif GetResourceState('ox_target') == 'started' then
             exports.ox_target:addLocalEntity(BT.ped, {
                 {
-                    name = 'banktruck_start',
+                    name = 'nowipebanktruck_start',
                     icon = 'fas fa-truck-ramp-box',
                     label = Config.Ped.label,
                     distance = Config.Ped.interactDistance,
                     onSelect = function()
-                        TriggerEvent('banktruck:client:openMenu')
+                        TriggerEvent('nowipebanktruck:client:openMenu')
                     end,
                 },
             })
@@ -95,7 +95,7 @@ CreateThread(function()
             if dist < Config.Ped.interactDistance then
                 DrawText3D(GetEntityCoords(BT.ped), ('[E] %s'):format(Config.Ped.label))
                 if IsControlJustReleased(0, 38) then
-                    TriggerEvent('banktruck:client:openMenu')
+                    TriggerEvent('nowipebanktruck:client:openMenu')
                 end
             else
                 Wait(500)
@@ -139,22 +139,22 @@ function BT.Progress(duration, label)
     return true
 end
 
-RegisterNetEvent('banktruck:client:openMenu', function()
+RegisterNetEvent('nowipebanktruck:client:openMenu', function()
     if BT.lockedOut then
         BT.Notify('Nothing for you right now.', 'error')
         return
     end
-    TriggerServerEvent('banktruck:server:requestStart')
+    TriggerServerEvent('nowipebanktruck:server:requestStart')
 end)
 
-RegisterNetEvent('banktruck:client:notify', function(msg, type)
+RegisterNetEvent('nowipebanktruck:client:notify', function(msg, type)
     BT.Notify(msg, type)
 end)
 
 -- ============================================================
 --  Broadcast entity blip so the whole server can see the truck once it's rolling
 -- ============================================================
-RegisterNetEvent('banktruck:client:trackEntity', function(netId)
+RegisterNetEvent('nowipebanktruck:client:trackEntity', function(netId)
     CreateThread(function()
         local attempts = 0
         while not NetworkDoesEntityExistWithNetworkId(netId) and attempts < 100 do
@@ -181,17 +181,17 @@ RegisterNetEvent('banktruck:client:trackEntity', function(netId)
                     options = {
                         {
                             type = 'client',
-                            event = 'banktruck:client:tryPlantC4',
+                            event = 'nowipebanktruck:client:tryPlantC4',
                             icon = 'fas fa-bomb',
                             label = 'Plant C4 on back doors',
-                            canInteract = function(ent) return Entity(ent).state['bt:stage'] == 'cleared' end,
+                            canInteract = function(ent) return Entity(ent).state['nowipebanktruck:stage'] == 'cleared' end,
                         },
                         {
                             type = 'client',
-                            event = 'banktruck:client:tryLoot',
+                            event = 'nowipebanktruck:client:tryLoot',
                             icon = 'fas fa-sack-dollar',
                             label = 'Loot bank truck',
-                            canInteract = function(ent) return Entity(ent).state['bt:stage'] == 'breached' end,
+                            canInteract = function(ent) return Entity(ent).state['nowipebanktruck:stage'] == 'breached' end,
                         },
                     },
                     distance = 3.0,
@@ -199,20 +199,20 @@ RegisterNetEvent('banktruck:client:trackEntity', function(netId)
             elseif GetResourceState('ox_target') == 'started' then
                 exports.ox_target:addLocalEntity(entity, {
                     {
-                        name = 'banktruck_c4',
+                        name = 'nowipebanktruck_c4',
                         icon = 'fas fa-bomb',
                         label = 'Plant C4 on back doors',
                         distance = 3.0,
-                        canInteract = function(ent) return Entity(ent).state['bt:stage'] == 'cleared' end,
-                        onSelect = function() TriggerEvent('banktruck:client:tryPlantC4') end,
+                        canInteract = function(ent) return Entity(ent).state['nowipebanktruck:stage'] == 'cleared' end,
+                        onSelect = function() TriggerEvent('nowipebanktruck:client:tryPlantC4') end,
                     },
                     {
-                        name = 'banktruck_loot',
+                        name = 'nowipebanktruck_loot',
                         icon = 'fas fa-sack-dollar',
                         label = 'Loot bank truck',
                         distance = 3.0,
-                        canInteract = function(ent) return Entity(ent).state['bt:stage'] == 'breached' end,
-                        onSelect = function() TriggerEvent('banktruck:client:tryLoot') end,
+                        canInteract = function(ent) return Entity(ent).state['nowipebanktruck:stage'] == 'breached' end,
+                        onSelect = function() TriggerEvent('nowipebanktruck:client:tryLoot') end,
                     },
                 })
             end
@@ -225,7 +225,7 @@ RegisterNetEvent('banktruck:client:trackEntity', function(netId)
     end)
 end)
 
-RegisterNetEvent('banktruck:client:setLockout', function(state)
+RegisterNetEvent('nowipebanktruck:client:setLockout', function(state)
     BT.lockedOut = state
 end)
 

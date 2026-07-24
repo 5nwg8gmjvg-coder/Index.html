@@ -69,7 +69,7 @@ end
 
 local function setStage(vehicle, stage)
     BT.stage = stage
-    Entity(vehicle).state:set('bt:stage', stage, true)
+    Entity(vehicle).state:set('nowipebanktruck:stage', stage, true)
 end
 
 local function bailOutAndFight(vehicle)
@@ -113,7 +113,7 @@ local function bailOutAndFight(vehicle)
             end
             if allDead then
                 setStage(vehicle, 'cleared')
-                TriggerServerEvent('banktruck:server:log', BT.heistId, 'cleared')
+                TriggerServerEvent('nowipebanktruck:server:log', BT.heistId, 'cleared')
                 break
             end
             if not DoesEntityExist(vehicle) then break end
@@ -140,7 +140,7 @@ local function monitorStopDetection(vehicle)
     end
 end
 
-RegisterNetEvent('banktruck:client:beginHeist', function(spawnIndex, heistId)
+RegisterNetEvent('nowipebanktruck:client:beginHeist', function(spawnIndex, heistId)
     BT.isDirector = true
     BT.heistId = heistId
     BT.stage = 'patrol'
@@ -161,7 +161,7 @@ RegisterNetEvent('banktruck:client:beginHeist', function(spawnIndex, heistId)
     SetVehicleNumberPlateText(vehicle, ('BNK%04d'):format(math.random(0, 9999)))
 
     BT.truck = vehicle
-    Entity(vehicle).state:set('bt:heistId', heistId, true)
+    Entity(vehicle).state:set('nowipebanktruck:heistId', heistId, true)
     setStage(vehicle, 'patrol')
 
     -- driver
@@ -183,15 +183,15 @@ RegisterNetEvent('banktruck:client:beginHeist', function(spawnIndex, heistId)
     end
 
     local netId = NetworkGetNetworkIdFromEntity(vehicle)
-    TriggerServerEvent('banktruck:server:announceTruck', netId)
-    TriggerServerEvent('banktruck:server:log', heistId, 'start')
+    TriggerServerEvent('nowipebanktruck:server:announceTruck', netId)
+    TriggerServerEvent('nowipebanktruck:server:log', heistId, 'start')
 
     CreateThread(function() beginPatrol(vehicle, driver, spawnData.route) end)
     CreateThread(function() monitorStopDetection(vehicle) end)
 end)
 
 -- Reacts to stage changes on ANY client (notifications only, no authority)
-AddStateBagChangeHandler('bt:stage', nil, function(bagName, key, value)
+AddStateBagChangeHandler('nowipebanktruck:stage', nil, function(bagName, key, value)
     local entity = GetEntityFromStateBagName(bagName)
     if not DoesEntityExist(entity) then return end
 
@@ -207,7 +207,7 @@ AddStateBagChangeHandler('bt:stage', nil, function(bagName, key, value)
     end
 end)
 
-RegisterNetEvent('banktruck:client:cleanupTruck', function()
+RegisterNetEvent('nowipebanktruck:client:cleanupTruck', function()
     if BT.truck and DoesEntityExist(BT.truck) then DeleteEntity(BT.truck) end
     if BT.driver and DoesEntityExist(BT.driver) then DeleteEntity(BT.driver) end
     for _, guard in ipairs(BT.guards) do
@@ -216,6 +216,6 @@ RegisterNetEvent('banktruck:client:cleanupTruck', function()
     BT.truck, BT.driver, BT.guards, BT.isDirector, BT.heistId, BT.stage = nil, nil, {}, false, nil, nil
 end)
 
-RegisterNetEvent('banktruck:client:heistOver', function()
+RegisterNetEvent('nowipebanktruck:client:heistOver', function()
     BT.lockedOut = false
 end)
